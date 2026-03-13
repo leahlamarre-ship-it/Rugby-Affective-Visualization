@@ -5,6 +5,7 @@ date: "03/12/26"
 format: html
 ---
 
+## Initial Set-up
 ```{r}
 #| label: Set-up
 
@@ -28,14 +29,16 @@ my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualizatio
 
 ```
 
+## Cleaning Data
 
 ```{r}
+#| label: cleaning personal data
 
 
 set.seed(123) # ensuring the same output of numbers occurs each time the code is ran.
 
 # Clean data and create formation
-my_data_clean <- my_data |>
+my_data_pitch <- my_data |>
   clean_names() |> # cleaning names so they are all lowercase and remove spaces
   drop_na() |> # dropping any n/a values in the data
   mutate(
@@ -53,10 +56,43 @@ my_data_clean <- my_data |>
     ),
     y_position = width_position 
   )
+my_data_clean <- my_data |> # create clean data object for other visualizations
+  clean_names() |> # cleaning names so they are all lowercase and remove spaces
+  drop_na() # dropping n/a values from the data set
 
 
 ```
 
+## Rugby Pitch scatterplot
+```{r}
+#| label: Rugby field plot
+
+ggplot() + # create general plot 
+  rugby_pitch() + # rugby_pitch creates field 
+  geom_point( # create point geometry
+    data = my_data_pitch, # using my_data_pitch for data frame
+    aes(
+      x = x_position, # positions set in the cleaning stage for x-axis
+      y = y_position, # positions set in the cleaning stage for y-axis
+      size = amount_of_protein_grams, # size is dependent on protein amount
+      color = rugby_practice_day_yes_or_no # color will distiguish if it was a rugby day
+    ),
+    alpha = 0.9 # making the points a bit transparent
+  ) +
+  scale_color_manual(values = c( # setting each category a color
+    "yes" = "orange",
+    "no" = "black"
+  )) +
+  coord_fixed(xlim = c(0, 100), ylim = c(0, 70)) + # fixed limits to keep points on within the right space
+  labs(
+    title = "Protein Intake on Rugby vs Non-Rugby Days", # adding in title 
+    subtitle = "Attack Behind Right 10m | Defense Behind Left 10m", # labeling the two sides
+    color = "Practice Day", # set color or be based on practice day
+    size = "Protein Intake (g)" # size will be determined by protein intale
+  ) +
+  theme_void() # setting a theme
+
+```
 
 
 
