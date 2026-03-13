@@ -70,6 +70,7 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 ## 1. Rugby Pitch scatterplot
 ```{r}
 #| label: Rugby field plot
+
 ggplot() + # create general plot 
   rugby_pitch() + # rugby_pitch creates field 
   geom_point( # create point geometry
@@ -80,10 +81,12 @@ ggplot() + # create general plot
       size = amount_of_protein_grams, # size is dependent on protein amount
       color = rugby_practice_day_yes_or_no # color will distiguish if it was a rugby day
     ),
-    alpha = 0.9 # making the points a bit transparent
+    alpha = 0.9, # slightly softer
+    shape = 4, # circle with fill
+    stroke = 0.9 # subtle border
   ) +
   scale_color_manual(values = c( # setting each category a color
-    "yes" = "#b29758",
+    "yes" = "#8B0000",
     "no" = "#404472"
   )) +
   scale_x_continuous(expand = expansion(mult = 0.05)) +
@@ -97,7 +100,89 @@ ggplot() + # create general plot
     size = "Protein Intake (g)" # size will be determined by protein intale
   ) +
   theme_void() 
+```
 
+```{r}
+library(ggplot2)
+library(showtext)
+library(grid)
+
+
+font_add_google("Playfair Display", "wesfont")
+showtext_auto()
+
+
+line_arrows <- data.frame(
+  x = c(75, 20),        # where the arrow starts (pointing at the line)
+  y = c(55, 35),
+  xend = c(55, 35),     # where the arrow points
+  yend = c(40, 30),
+  label = c("Attack Line", "Defense Line")  # text to display
+)
+
+t
+ggplot() +
+  rugby_pitch() +
+
+  # Protein intake points
+  geom_point(
+    data = my_data_pitch,
+    aes(
+      x = x_position,
+      y = y_position,
+      size = amount_of_protein_grams,
+      color = rugby_practice_day_yes_or_no
+    ),
+    alpha = 0.85,
+    shape = 4,
+    stroke = 0.8
+  ) +
+
+  # Arrows pointing at attack and defense lines
+  geom_curve(
+    data = line_arrows,
+    aes(x = x, y = y, xend = xend, yend = yend),
+    curvature = 0.2,
+    arrow = arrow(length = unit(0.03, "npc")),
+    color = "#2E4053",
+    size = 0.8
+  ) +
+
+  # Labels for attack/defense lines
+  geom_text(
+    data = line_arrows,
+    aes(x = x, y = y, label = label),
+    family = "wesfont",
+    color = "#2E4053",
+    size = 5,
+    fontface = "bold",
+    nudge_x = -2,
+    nudge_y = 2
+  ) +
+
+  # Color and size scales for protein points
+  scale_color_manual(values = c("yes" = "#8B0000", "no" = "#404472")) +
+  scale_size(range = c(3, 8)) +
+  scale_x_continuous(expand = expansion(mult = 0.05)) +
+  scale_y_continuous(expand = expansion(mult = 0.05)) +
+
+  coord_fixed() +
+
+  # Titles and labels
+  labs(
+    title = "Protein Intake on Rugby vs Non-Rugby Days",
+    color = "Practice Day",
+    size = "Protein Intake (g)"
+  ) +
+
+  # Wes Anderson theme
+  theme_void(base_family = "wesfont") +
+  theme(
+    plot.title = element_text(face = "bold", size = 20, color = "#2E4053"),
+    plot.subtitle = element_text(face = "italic", size = 14, color = "#566573"),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+  )
 ```
 
 
@@ -107,7 +192,6 @@ ggplot() + # create general plot
 
 # Font
 font_add_google("Playfair Display", "wesfont")
-showtext_auto()
 
 # Wes Anderson palette
 wes_colors <- wes_palette("AsteroidCity1", 3)
