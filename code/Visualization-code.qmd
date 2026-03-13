@@ -1,5 +1,81 @@
 ---
-title: "Rugby_Affective_Visualization"
+title: "Rugby Affective Visualization"
 author: "Leah Pettway"
+date: "03/12/26"
 format: html
 ---
+
+```{r}
+#| label: Set-up
+
+library(tidyverse) #loading in initial packages necessary for visualizations
+library(janitor)
+library(ggridges)
+library(GGally)
+library(dplyr)
+library(readr)
+library(plotly)
+library(heatmaply)
+install.packages("wesanderson") # installing a color package
+library(wesanderson)
+install.packages("ggcorrplot")
+library(ggcorrplot) 
+install.packages("remotes")
+remotes::install_github("javiereliomedina/ggrugby")
+library(ggrugby) # loading in ggrugby package for field shape
+
+my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualization/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
+
+```
+
+
+```{r}
+
+
+set.seed(123) # ensuring the same output of numbers occurs each time the code is ran.
+
+# Clean data and create formation
+my_data_clean <- my_data |>
+  clean_names() |> # cleaning names so they are all lowercase and remove spaces
+  drop_na() |> # dropping any n/a values in the data
+  mutate(
+    # spread players across pitch width
+    width_position = seq(5, 65, length.out = n()),
+    
+    # formation positions
+    x_position = ifelse(
+      rugby_practice_day_yes_or_no == "yes",
+      # attacking backline behind right 10m line
+      58 + 8 * sin(width_position / 10),
+      
+      # defensive line behind left 10m line
+      42
+    ),
+    y_position = width_position 
+  )
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
