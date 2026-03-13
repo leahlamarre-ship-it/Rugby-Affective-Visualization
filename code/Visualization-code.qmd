@@ -70,7 +70,6 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 ## 1. Rugby Pitch scatterplot
 ```{r}
 #| label: Rugby field plot
-
 ggplot() + # create general plot 
   rugby_pitch() + # rugby_pitch creates field 
   geom_point( # create point geometry
@@ -84,29 +83,36 @@ ggplot() + # create general plot
     alpha = 0.9 # making the points a bit transparent
   ) +
   scale_color_manual(values = c( # setting each category a color
-    "yes" = "orange",
-    "no" = "black"
+    "yes" = "#b29758",
+    "no" = "#404472"
   )) +
-  coord_fixed(xlim = c(0, 100), ylim = c(0, 70)) + # fixed limits to keep points on within the right space
+  scale_x_continuous(expand = expansion(mult = 0.05)) +
+  scale_y_continuous(expand = expansion(mult = 0.05)) +
+  
+  coord_fixed() + # fixed limits to keep points on within the right space
   labs(
     title = "Protein Intake on Rugby vs Non-Rugby Days", # adding in title 
     subtitle = "Attack Behind Right 10m | Defense Behind Left 10m", # labeling the two sides
     color = "Practice Day", # set color or be based on practice day
     size = "Protein Intake (g)" # size will be determined by protein intale
   ) +
-  theme_void() # setting a theme
+  theme_void() 
 
 ```
+
 
 ## 2. Creating a correlation heatmap
 ```{r}
 #| label: Correlation map
 
-# Add Google font
+# Font
 font_add_google("Playfair Display", "wesfont")
 showtext_auto()
 
-# Select numeric variables
+# Wes Anderson palette
+wes_colors <- wes_palette("AsteroidCity1", 3)
+wes_gradient <- colorRampPalette(wes_colors)(100)
+
 heat_data <- my_data_clean |> 
   select(
     amount_of_protein_grams,
@@ -124,22 +130,30 @@ heat_data <- my_data_clean |>
 # Correlation matrix
 matrix <- cor(heat_data, use = "complete.obs")
 
-# Heatmap
-map <- heatmaply(
+heatmaply(
   matrix,
-  colors = wes_palette("Royal1"),   # corrected argument
+  colors = wes_gradient,        # center scale at 0
   dendrogram = "none",
   xlab = "Variables",
   ylab = "Variables",
   main = "Correlation Heatmap of Personal Nutrition & Activity Data",
   scale = "none",
-  margins = c(60, 60, 40, 20),
+  margins = c(80, 200, 50, 20),  # pushes y labels left
   grid_color = "white",
-  grid_width = 0.00001,
   hide_colorbar = FALSE,
-  fontsize_row = 10,
-  fontsize_col = 10,
-  fontfamily = "wesfont"
+  fontsize_row = 12,
+  fontsize_col = 12,
+  cellnote = round(matrix,2),
+  notecex = 1
+) |> 
+layout(
+  font = list(family = "Playfair Display"),
+  yaxis = list(
+    title = list(
+      text = "Variables",
+      standoff = 10   # pushes title away from labels
+    )
+  )
 )
 
 ```
@@ -159,6 +173,7 @@ ggplot(my_data_clean,
        title = "Distribution of Protein Intake on Rugby vs Non-Rugby Days") +
   theme_ridges() +
   theme(legend.position = "none")
+
 
 ```
 
