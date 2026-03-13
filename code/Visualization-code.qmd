@@ -161,9 +161,6 @@ heat_data <- my_data_clean |>  # clean up data for correlation map and choose nu
 # Correlation matrix
 matrix <- cor(heat_data, use = "complete.obs")
 
-
-jpeg(file = "heatmap.jpeg", width = 6, height = 4, units = "in", res = 300) |> 
-
 heatmaply( # using correlation matrix for the heat map
   matrix,
   colors = wes_gradient, 
@@ -188,9 +185,8 @@ layout(
       standoff = 10   # pushes title away from labels
     )
   )
-) |> 
+) 
 
-dev.off()
 ```
 
 
