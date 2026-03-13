@@ -106,10 +106,6 @@ ggplot() + # create general plot
 font_add_google("Playfair Display", "wesfont")
 showtext_auto()
 
-# Wes Anderson palette
-wes_colors <- wes_palette("GrandBudapest1", 3)
-wes_gradient <- colorRampPalette(wes_colors)(100)
-
 # Select numeric variables
 heat_data <- my_data_clean |> 
   select(
@@ -131,7 +127,7 @@ matrix <- cor(heat_data, use = "complete.obs")
 # Heatmap
 map <- heatmaply(
   matrix,
-  colors = wes_gradient,   # corrected argument
+  colors = wes_palette("Royal1"),   # corrected argument
   dendrogram = "none",
   xlab = "Variables",
   ylab = "Variables",
