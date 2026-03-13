@@ -1,30 +1,29 @@
 ---
 title: "Rugby Affective Visualization"
 author: "Leah Pettway"
-date: "03/12/26"
+date: "03/13/26"
 format: html
 ---
 
 ## Initial Set-up
 ```{r}
 #| label: Set-up
+#| message: false
 
 library(tidyverse) #loading in initial packages necessary for visualizations
 library(janitor)
 library(grid)
-library(ggridges)
-library(GGally)
+library(ggridges) # loading in package for ridge plot
 library(dplyr)
 library(readr)
-library(plotly)
-library(heatmaply)
+library(heatmaply) # loading in package for heat map
 library(showtext)
 library(sysfonts)
- # installing a color package
-library(wesanderson)
-library(ggcorrplot) 
+library(wesanderson) # wes anderson based color palette
 library(ggrugby) # loading in ggrugby package for field shape
-showtext.auto()
+library(here)
+showtext.auto() # making sure fonts show up in doc
+
 my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualization/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
 
 ```
@@ -67,78 +66,63 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 
 ```{r}
 #| label: Rugby Plot
+#| warning: false
 
-font_add_google("Playfair Display", "wesfont")
+font_add_google("Playfair Display", "wesfont") # choosing a font that follows a wes anderson theme
 showtext_auto()
 
-
-line_arrows <- data.frame(
+line_arrows <- data.frame( #creating positional lines to denote the different lines
   x = c(75, 20),        # where the arrow starts (pointing at the line)
   y = c(55, 35),
   xend = c(55, 35),     # where the arrow points
   yend = c(40, 30),
   label = c("Attack Line", "Defense Line")  # text to display
 )
-
-t
-ggplot() +
-  rugby_pitch() +
-
-  # Protein intake points
+ggplot() + # base plot
+  rugby_pitch() + # rugby field to put points onto
   geom_point(
-    data = my_data_pitch,
+    data = my_data_pitch, # wrangled data for field plot
     aes(
-      x = x_position,
-      y = y_position,
-      size = amount_of_protein_grams,
-      color = rugby_practice_day_yes_or_no
+      x = x_position, # x- axis
+      y = y_position, # y - axis
+      size = amount_of_protein_grams, # make the point size reflect the protein amount
+      color = rugby_practice_day_yes_or_no # delineate each category by color
     ),
     alpha = 0.85,
     shape = 4,
     stroke = 0.8
-  ) +
-
-  # Arrows pointing at attack and defense lines
+  ) +  # Arrows pointing at attack and defense lines
   geom_curve(
-    data = line_arrows,
-    aes(x = x, y = y, xend = xend, yend = yend),
-    curvature = 0.2,
-    arrow = arrow(length = unit(0.03, "npc")),
+    data = line_arrows, # arrow position data frame
+    aes(x = x, y = y, xend = xend, yend = yend), # set position to the points
+    curvature = 0.2, # how much arrow curves
+    arrow = arrow(length = unit(0.03, "npc")), # give the arrow an arrow head
     color = "#2E4053",
     size = 0.8
-  ) +
-
-  # Labels for attack/defense lines
-  geom_text(
+  ) + # Labels for attack/defense lines
+   geom_text(
     data = line_arrows,
     aes(x = x, y = y, label = label),
-    family = "wesfont",
+    family = "wesfont", # make sure font is still in theme
     color = "#2E4053",
     size = 5,
     fontface = "bold",
     nudge_x = -2,
     nudge_y = 2
-  ) +
-
-  # Color and size scales for protein points
-  scale_color_manual(values = c("yes" = "#8B0000", "no" = "#404472")) +
+  ) + # Color and size scales for protein points
+  scale_color_manual(values = c("yes" = "#8B0000", "no" = "#404472")) + # muted darker colors for rugby or no rugby days
   scale_size(range = c(3, 8)) +
-  scale_x_continuous(expand = expansion(mult = 0.05)) +
+  scale_x_continuous(expand = expansion(mult = 0.05)) + # make spacing adjust to window
   scale_y_continuous(expand = expansion(mult = 0.05)) +
-
-  coord_fixed() +
-
-  # Titles and labels
+  coord_fixed() + # Titles and labels
   labs(
-    title = "Protein Intake on Rugby vs Non-Rugby Days",
+    title = "Protein Intake on Rugby vs Non-Rugby Days", 
     color = "Practice Day",
     size = "Protein Intake (g)"
-  ) +
-
-  # Wes Anderson theme
+  ) + # Wes Anderson theme
   theme_void(base_family = "wesfont") +
   theme(
-    plot.title = element_text(face = "bold", size = 20, color = "#2E4053"),
+    plot.title = element_text(face = "bold", size = 20, color = "#2E4053"), # plot aesthetics
     plot.subtitle = element_text(face = "italic", size = 14, color = "#566573"),
     legend.title = element_text(size = 12),
     legend.text = element_text(size = 10),
@@ -151,21 +135,21 @@ ggplot() +
 #| label: Correlation map
 
 # Font
-font_add_google("Playfair Display", "wesfont")
+font_add_google("Playfair Display", "wesfont") # use same font as previous visualization
 
 # Wes Anderson palette
-wes_colors <- wes_palette("AsteroidCity1", 3)
+wes_colors <- wes_palette("AsteroidCity1", 3) # put into form that is ready to use in heatmaply
 wes_gradient <- colorRampPalette(wes_colors)(100)
 
-heat_data <- my_data_clean |> 
-  select(
+heat_data <- my_data_clean |>  # clean up data for correlation map and choose numeric variables
+  select( # variables of interest
     amount_of_protein_grams,
     total_caloric_count_of_protein,
     caffeine_intake_milligrams,
     number_of_calories_burned_calories
   ) |> 
   rename(
-    "Protein (g)" = amount_of_protein_grams,
+    "Protein (g)" = amount_of_protein_grams, # change labels
     "Protein Calories" = total_caloric_count_of_protein,
     "Caffeine (mg)" = caffeine_intake_milligrams,
     "Calories Burned" = number_of_calories_burned_calories
@@ -174,27 +158,27 @@ heat_data <- my_data_clean |>
 # Correlation matrix
 matrix <- cor(heat_data, use = "complete.obs")
 
-heatmaply(
+heatmaply( # using correlation matrix for the heat map
   matrix,
-  colors = wes_gradient,        # center scale at 0
+  colors = wes_gradient, 
   dendrogram = "none",
-  xlab = "Variables",
-  ylab = "Variables",
-  main = "Correlation Heatmap of Personal Nutrition & Activity Data",
+  xlab = "Variables", # labeling x axis
+  ylab = "Variables", # labeling y axis
+  main = "Correlation Heatmap of Personal Nutrition & Activity Data", # title
   scale = "none",
   margins = c(80, 200, 50, 20),  # pushes y labels left
   grid_color = "white",
-  hide_colorbar = FALSE,
+  hide_colorbar = FALSE, # changing the heat map aesthetics
   fontsize_row = 12,
   fontsize_col = 12,
   cellnote = round(matrix,2),
   notecex = 1
 ) |> 
 layout(
-  font = list(family = "Playfair Display"),
+  font = list(family = "Playfair Display"), # edit the spacing and font
   yaxis = list(
     title = list(
-      text = "Variables",
+      text = "Variables", # test I want moved
       standoff = 10   # pushes title away from labels
     )
   )
@@ -206,30 +190,30 @@ layout(
 
 ```{r}
 #| label: Ridge Plot
+#| warning: false
 
-font_add_google("Playfair Display", "wesfont")
-showtext_auto()
+font_add_google("Playfair Display", "wesfont") # using same font throughout for theme
 
-wes_colors <- c("yes" = "#8B0000",  
+wes_colors <- c("yes" = "#8B0000",  # show category by color
                 "no"  = "#404472")  
 
-ggplot(my_data_clean,
-       aes(x = amount_of_protein_grams,
-           y = rugby_practice_day_yes_or_no,
-           fill = rugby_practice_day_yes_or_no)) +
+ggplot(my_data_clean, # base plot
+       aes(x = amount_of_protein_grams, # x axis
+           y = rugby_practice_day_yes_or_no, # y axis
+           fill = rugby_practice_day_yes_or_no)) + # choose color based on rugby or non rugby day
   
   geom_density_ridges(alpha = 0.7, scale = 1.2, color = "#2E4053", size = 0.3) +
+  # look of ridges
+  scale_fill_manual(values = wes_colors) + # color of ridges
   
-  scale_fill_manual(values = wes_colors) +
-  
-  labs(
+  labs( # labels
     x = "Protein Intake (g)",
     y = "Rugby Practice Day",
     title = "Distribution of Protein Intake on Rugby vs Non-Rugby Days"
   ) +
   
   theme_ridges(font_family = "wesfont") +  # sets font for the plot
-  theme(
+  theme( # plot aesthetics
     plot.title = element_text(face = "bold", size = 18, color = "#2E4053", hjust = 0.5),
     axis.title = element_text(size = 12, face = "bold"),
     axis.text = element_text(size = 10, color = "#566573"),
@@ -242,9 +226,16 @@ ggplot(my_data_clean,
 
 #### 
 
+The patterns I am highlighting in the visualizations is the difference in the amount of protein I am ingesting on rugby versus non rugby days since ultimately the highest intakes occur on rugby days, but lower amounts are more consistently achieved over non rugby days. This is also shown in the ridge line plot with the higher peak of the non rugby days curve but at a lower protein intake. The correlation Heat map shows the habits that may contribute to those outcomes like the negative correlation outcome of ingesting caffeine and eating protein.
 
+The aesthetic choices were mainly driven by finding the Wes Anderson palette for r. I chose many muted colors and much more prim looking font to continue the attempt at a more Wes Anderson aesthetic. I find that it also resembles a playbook which is a fun way to display the sport focused nature of my personal data.
+The examples I drew from are the plays and shapes made during rugby practice by my coach Kelly Griffin. I also took inspiration from rugby fields themselves or a pitch. 
+Heat map correlation was pulled from the r gallery by Yan Holtz  and Wes Anderson palette created by Karthik Ram. I liked the mosaic look to the correlation graphs as well.
+The ridge line plot was also inspired by the r graph gallery ridge lin.
 
+In the process of coding the visualizations I had to clean up the data in the form of creating positioning for my observations in the shapes I wanted so finding a mode that would work to create the formations I was imagining. I started with normal points for my scatter plot and went on to keep that for the final rendering of the plot. I started with a ggcorr plot but then I changed ot heatmaply sine it displayed correlation in a more visually capturing way also I had to make sure the variables were numeric to properly run the heat map. The ridge line was fairly straightforward .
 
+I used google, other peoples code, and reddit. In using google I would look up hex codes, errors, and potential sport packages to use for the visualizations. In using other peoples code I used i took the listed code from the r gallery to build the skeleton for my plots and further used the ggrugby package to create a pitch shape. Reddit was used for more hyper specific issues of moving labels and creating the aesthetic framework of the plots.
 
 
 
