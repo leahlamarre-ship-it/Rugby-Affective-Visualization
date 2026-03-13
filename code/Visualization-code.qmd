@@ -11,6 +11,7 @@ format: html
 
 library(tidyverse) #loading in initial packages necessary for visualizations
 library(janitor)
+library(grid)
 library(ggridges)
 library(GGally)
 library(dplyr)
@@ -68,45 +69,9 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 ```
 
 ## 1. Rugby Pitch scatterplot
-```{r}
-#| label: Rugby field plot
-
-ggplot() + # create general plot 
-  rugby_pitch() + # rugby_pitch creates field 
-  geom_point( # create point geometry
-    data = my_data_pitch, # using my_data_pitch for data frame
-    aes(
-      x = x_position, # positions set in the cleaning stage for x-axis
-      y = y_position, # positions set in the cleaning stage for y-axis
-      size = amount_of_protein_grams, # size is dependent on protein amount
-      color = rugby_practice_day_yes_or_no # color will distiguish if it was a rugby day
-    ),
-    alpha = 0.9, # slightly softer
-    shape = 4, # circle with fill
-    stroke = 0.9 # subtle border
-  ) +
-  scale_color_manual(values = c( # setting each category a color
-    "yes" = "#8B0000",
-    "no" = "#404472"
-  )) +
-  scale_x_continuous(expand = expansion(mult = 0.05)) +
-  scale_y_continuous(expand = expansion(mult = 0.05)) +
-  
-  coord_fixed() + # fixed limits to keep points on within the right space
-  labs(
-    title = "Protein Intake on Rugby vs Non-Rugby Days", # adding in title 
-    subtitle = "Attack Behind Right 10m | Defense Behind Left 10m", # labeling the two sides
-    color = "Practice Day", # set color or be based on practice day
-    size = "Protein Intake (g)" # size will be determined by protein intale
-  ) +
-  theme_void() 
-```
 
 ```{r}
-library(ggplot2)
-library(showtext)
-library(grid)
-
+#| label: Rugby Plot
 
 font_add_google("Playfair Display", "wesfont")
 showtext_auto()
@@ -243,25 +208,39 @@ layout(
 ```
 
 ## 3. Creating a ridge line plot
-```{r}
-#| label: Ridgeline plot
 
-# Ridgeline plot
+```{r}
+#| label: Ridge Plot
+
+font_add_google("Playfair Display", "wesfont")
+showtext_auto()
+
+wes_colors <- c("yes" = "#8B0000",  
+                "no"  = "#404472")  
+
 ggplot(my_data_clean,
        aes(x = amount_of_protein_grams,
            y = rugby_practice_day_yes_or_no,
            fill = rugby_practice_day_yes_or_no)) +
-  geom_density_ridges(alpha = 0.7) +
-  labs(x = "Protein Intake (g)",
-       y = "Rugby Practice Day",
-       title = "Distribution of Protein Intake on Rugby vs Non-Rugby Days") +
-  theme_ridges() +
-  theme(legend.position = "none")
-
-
+  
+  geom_density_ridges(alpha = 0.7, scale = 1.2, color = "#2E4053", size = 0.3) +
+  
+  scale_fill_manual(values = wes_colors) +
+  
+  labs(
+    x = "Protein Intake (g)",
+    y = "Rugby Practice Day",
+    title = "Distribution of Protein Intake on Rugby vs Non-Rugby Days"
+  ) +
+  
+  theme_ridges(font_family = "wesfont") +  # sets font for the plot
+  theme(
+    plot.title = element_text(face = "bold", size = 18, color = "#2E4053", hjust = 0.5),
+    axis.title = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 10, color = "#566573"),
+    legend.position = "none"
+  )
 ```
-
-
 
 
 
