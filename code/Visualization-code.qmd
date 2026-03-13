@@ -67,7 +67,7 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 
 ```
 
-## Rugby Pitch scatterplot
+## 1. Rugby Pitch scatterplot
 ```{r}
 #| label: Rugby field plot
 
@@ -98,11 +98,19 @@ ggplot() + # create general plot
 
 ```
 
-## Creating a correlation heatmap
+## 2. Creating a correlation heatmap
 ```{r}
 #| label: Correlation map
 
-# Select numeric variables for the heatmap
+# Add Google font
+font_add_google("Playfair Display", "wesfont")
+showtext_auto()
+
+# Wes Anderson palette
+wes_colors <- wes_palette("GrandBudapest1", 3)
+wes_gradient <- colorRampPalette(wes_colors)(100)
+
+# Select numeric variables
 heat_data <- my_data_clean |> 
   select(
     amount_of_protein_grams,
@@ -111,18 +119,19 @@ heat_data <- my_data_clean |>
     number_of_calories_burned_calories
   ) |> 
   rename(
-      "Protein (g)" = amount_of_protein_grams,
-      "Protein Calories" = total_caloric_count_of_protein,
-      "Caffeine (mg)" = caffeine_intake_milligrams,
-      "Calories Burned" = number_of_calories_burned_calories
-    )
+    "Protein (g)" = amount_of_protein_grams,
+    "Protein Calories" = total_caloric_count_of_protein,
+    "Caffeine (mg)" = caffeine_intake_milligrams,
+    "Calories Burned" = number_of_calories_burned_calories
+  )
 
-# Convert to correlation matrix
+# Correlation matrix
 matrix <- cor(heat_data, use = "complete.obs")
 
 # Heatmap
 map <- heatmaply(
   matrix,
+  colors = wes_gradient,   # corrected argument
   dendrogram = "none",
   xlab = "Variables",
   ylab = "Variables",
@@ -133,12 +142,29 @@ map <- heatmaply(
   grid_width = 0.00001,
   hide_colorbar = FALSE,
   fontsize_row = 10,
-  fontsize_col = 10
+  fontsize_col = 10,
+  fontfamily = "wesfont"
 )
-
 
 ```
 
+## 3. Creating a ridge line plot
+```{r}
+#| label: Ridgeline plot
+
+# Ridgeline plot
+ggplot(my_data_clean,
+       aes(x = amount_of_protein_grams,
+           y = rugby_practice_day_yes_or_no,
+           fill = rugby_practice_day_yes_or_no)) +
+  geom_density_ridges(alpha = 0.7) +
+  labs(x = "Protein Intake (g)",
+       y = "Rugby Practice Day",
+       title = "Distribution of Protein Intake on Rugby vs Non-Rugby Days") +
+  theme_ridges() +
+  theme(legend.position = "none")
+
+```
 
 
 
