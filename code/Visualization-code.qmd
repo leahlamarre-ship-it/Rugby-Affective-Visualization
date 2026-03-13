@@ -17,6 +17,10 @@ library(dplyr)
 library(readr)
 library(plotly)
 library(heatmaply)
+install.packages("showtext")
+library(showtext)
+install.packages("sysfonts")
+library(sysfonts)
 install.packages("wesanderson") # installing a color package
 library(wesanderson)
 install.packages("ggcorrplot")
@@ -24,7 +28,7 @@ library(ggcorrplot)
 install.packages("remotes")
 remotes::install_github("javiereliomedina/ggrugby")
 library(ggrugby) # loading in ggrugby package for field shape
-
+showtext.auto()
 my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualization/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
 
 ```
@@ -94,6 +98,46 @@ ggplot() + # create general plot
 
 ```
 
+## Creating a correlation heatmap
+```{r}
+#| label: Correlation map
+
+# Select numeric variables for the heatmap
+heat_data <- my_data_clean |> 
+  select(
+    amount_of_protein_grams,
+    total_caloric_count_of_protein,
+    caffeine_intake_milligrams,
+    number_of_calories_burned_calories
+  ) |> 
+  rename(
+      "Protein (g)" = amount_of_protein_grams,
+      "Protein Calories" = total_caloric_count_of_protein,
+      "Caffeine (mg)" = caffeine_intake_milligrams,
+      "Calories Burned" = number_of_calories_burned_calories
+    )
+
+# Convert to correlation matrix
+matrix <- cor(heat_data, use = "complete.obs")
+
+# Heatmap
+map <- heatmaply(
+  matrix,
+  dendrogram = "none",
+  xlab = "Variables",
+  ylab = "Variables",
+  main = "Correlation Heatmap of Personal Nutrition & Activity Data",
+  scale = "none",
+  margins = c(60, 60, 40, 20),
+  grid_color = "white",
+  grid_width = 0.00001,
+  hide_colorbar = FALSE,
+  fontsize_row = 10,
+  fontsize_col = 10
+)
+
+
+```
 
 
 
