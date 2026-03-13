@@ -78,7 +78,7 @@ line_arrows <- data.frame( #creating positional lines to denote the different li
   yend = c(40, 30),
   label = c("Attack Line", "Defense Line")  # text to display
 )
-ggplot() + # base plot
+plot1 <- ggplot() + # base plot
   rugby_pitch() + # rugby field to put points onto
   geom_point(
     data = my_data_pitch, # wrangled data for field plot
@@ -129,6 +129,9 @@ ggplot() + # base plot
   )
 ```
 
+```{r}
+ggsave("Scatterplot.jpeg", plot = plot1, width = 6, height = 4, units = "in")
+```
 
 ## 2. Creating a correlation heatmap
 ```{r}
@@ -158,6 +161,9 @@ heat_data <- my_data_clean |>  # clean up data for correlation map and choose nu
 # Correlation matrix
 matrix <- cor(heat_data, use = "complete.obs")
 
+
+jpeg(file = "heatmap.jpeg", width = 6, height = 4, units = "in", res = 300) |> 
+
 heatmaply( # using correlation matrix for the heat map
   matrix,
   colors = wes_gradient, 
@@ -167,8 +173,8 @@ heatmaply( # using correlation matrix for the heat map
   main = "Correlation Heatmap of Personal Nutrition & Activity Data", # title
   scale = "none",
   margins = c(80, 200, 50, 20),  # pushes y labels left
-  grid_color = "white",
   hide_colorbar = FALSE, # changing the heat map aesthetics
+  grid_color = "white",
   fontsize_row = 12,
   fontsize_col = 12,
   cellnote = round(matrix,2),
@@ -182,9 +188,11 @@ layout(
       standoff = 10   # pushes title away from labels
     )
   )
-)
+) |> 
 
+dev.off()
 ```
+
 
 ## 3. Creating a ridge line plot
 
@@ -197,7 +205,7 @@ font_add_google("Playfair Display", "wesfont") # using same font throughout for 
 wes_colors <- c("yes" = "#8B0000",  # show category by color
                 "no"  = "#404472")  
 
-ggplot(my_data_clean, # base plot
+plot3 <- ggplot(my_data_clean, # base plot
        aes(x = amount_of_protein_grams, # x axis
            y = rugby_practice_day_yes_or_no, # y axis
            fill = rugby_practice_day_yes_or_no)) + # choose color based on rugby or non rugby day
@@ -221,11 +229,12 @@ ggplot(my_data_clean, # base plot
   )
 ```
 
+```{r}
+ggsave("ridgeplot.jpeg", plot = plot3, width = 6, height = 4, units = "in")
+```
 
 ## E. Write up
-
 #### 
-
 The patterns I am highlighting in the visualizations is the difference in the amount of protein I am ingesting on rugby versus non rugby days since ultimately the highest intakes occur on rugby days, but lower amounts are more consistently achieved over non rugby days. This is also shown in the ridge line plot with the higher peak of the non rugby days curve but at a lower protein intake. The correlation Heat map shows the habits that may contribute to those outcomes like the negative correlation outcome of ingesting caffeine and eating protein.
 
 The aesthetic choices were mainly driven by finding the Wes Anderson palette for r. I chose many muted colors and much more prim looking font to continue the attempt at a more Wes Anderson aesthetic. I find that it also resembles a playbook which is a fun way to display the sport focused nature of my personal data.

@@ -2,7 +2,7 @@
 
 ## General Information
 
-The repo is my own. (Github-username-leahlamarre)
+The repo is my own. (Github-username-leahlamarre-ship-it)
 
 The files detail visualizations created from the collection of personal data. THe visualizations work to show the relationship of how much protein I eat on rugby or non rugby days. 
 
