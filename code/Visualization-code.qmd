@@ -24,7 +24,7 @@ library(ggrugby) # loading in ggrugby package for field shape
 library(here)
 showtext.auto() # making sure fonts show up in doc
 
-my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualization/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
+my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
 
 ```
 
