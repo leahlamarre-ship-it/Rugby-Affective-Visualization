@@ -18,16 +18,11 @@ library(dplyr)
 library(readr)
 library(plotly)
 library(heatmaply)
-install.packages("showtext")
 library(showtext)
-install.packages("sysfonts")
 library(sysfonts)
-install.packages("wesanderson") # installing a color package
+ # installing a color package
 library(wesanderson)
-install.packages("ggcorrplot")
 library(ggcorrplot) 
-install.packages("remotes")
-remotes::install_github("javiereliomedina/ggrugby")
 library(ggrugby) # loading in ggrugby package for field shape
 showtext.auto()
 my_data <- read_csv("/Users/leahpettway/ENVS-193DS/github/affective_visualization/Rugby-Affective-Visualization/data/Personal_data.csv") # loading in personal data 
@@ -243,7 +238,9 @@ ggplot(my_data_clean,
 ```
 
 
+## E. Write up
 
+#### 
 
 
 
