@@ -223,6 +223,7 @@ plot3 <- ggplot(my_data_clean, # base plot
     axis.text = element_text(size = 10, color = "#566573"),
     legend.position = "none"
   )
+print(plot3)
 ```
 
 ```{r}
