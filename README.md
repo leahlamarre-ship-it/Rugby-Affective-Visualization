@@ -12,4 +12,4 @@ There is two folders each respectively named 'Code' and 'data'. All of the code 
 
 ## Rendered output
 
-The rendered code is in the repository here.
+The rendered code is in the repository [here](https://leahlamarre-ship-it.github.io/Rugby-Affective-Visualization/code/Visualization-code.html)
