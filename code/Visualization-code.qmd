@@ -66,7 +66,6 @@ my_data_clean <- my_data |> # create clean data object for other visualizations
 
 ```{r}
 #| label: Rugby Plot
-#| warning: false
 
 font_add_google("Playfair Display", "wesfont") # choosing a font that follows a wes anderson theme
 showtext_auto()
@@ -127,6 +126,7 @@ plot1 <- ggplot() + # base plot
     legend.title = element_text(size = 12),
     legend.text = element_text(size = 10),
   )
+print(plot1)
 ```
 
 ```{r}
